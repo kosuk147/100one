@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@onefive Youtube企画 100の質問</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .slide {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .title-slide h1 {
+            color: #4a5568;
+            font-size: 3.5em;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .title-slide .subtitle {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        
+        .title-slide .description {
+            font-size: 1.3em;
+            color: #4a5568;
+            line-height: 1.8;
+        }
+        
+        .question-slide .question-number {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .question-slide .question-text {
+            font-size: 2.2em;
+            color: #2d3748;
+            line-height: 1.4;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .question-slide .category {
+            font-size: 1em;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 30px;
+            font-weight: 500;
+        }
+        
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #4a5568;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .slide-counter {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            color: #4a5568;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+            border-radius: 0 0 2px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .slide {
+                width: 95%;
+                padding: 40px 20px;
+                min-height: 350px;
+            }
+            
+            .title-slide h1 {
+                font-size: 2.5em;
+            }
+            
+            .title-slide .subtitle {
+                font-size: 1.4em;
+            }
+            
+            .title-slide .description {
+                font-size: 1.1em;
+            }
+            
+            .question-slide .question-text {
+                font-size: 1.8em;
+            }
+            
+            .question-slide .question-number {
+                font-size: 1.2em;
+                padding: 12px 24px;
+            }
+            
+            .nav-btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progress-bar"></div>
+    
+    <div class="slideshow-container">
+        <!-- Title Slide -->
+        <div class="slide active title-slide">
+            <h1>@onefive</h1>
+            <div class="subtitle">Youtube企画 100の質問</div>
+            <div class="description">
+                ファンとの距離を縮める特別企画<br>
+                メンバーの素顔に迫る100の質問
+            </div>
+        </div>
+
+        <!-- Question 1 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q1</div>
+            <div class="question-text">あなたの名前は？</div>
+            <div class="category">基本情報</div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q2</div>
+            <div class="question-text">出身地は？</div>
+            <div class="category">基本情報</div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q3</div>
+            <div class="question-text">生年月日を教えてください</div>
+            <div class="category">基本情報</div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q4</div>
+            <div class="question-text">利き手は？</div>
+            <div class="category">基本情報</div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q5</div>
+            <div class="question-text">自分の好きな顔のパーツは？</div>
+            <div class="category">基本情報</div>
+        </div>
+
+        <!-- Question 6 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q6</div>
+            <div class="question-text">15歳で結成された時の気持ちを覚えていますか？</div>
+            <div class="category">@onefive活動</div>
+        </div>
+
+        <!-- Question 7 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q7</div>
+            <div class="question-text">@onefiveになって一番変わったことは？</div>
+            <div class="category">@onefive活動</div>
+        </div>
+
+        <!-- Question 8 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q8</div>
+            <div class="question-text">自分の「可愛いだけじゃない」一面を教えてください</div>
+            <div class="category">@onefive活動</div>
+        </div>
+
+        <!-- Question 9 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q9</div>
+            <div class="question-text">グループでの自分の役割は何だと思いますか？</div>
+            <div class="category">@onefive活動</div>
+        </div>
+
+        <!-- Question 10 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q10</div>
+            <div class="question-text">他のメンバーを家族に例えると？</div>
+            <div class="category">メンバー関係</div>
+        </div>
+
+        <!-- Question 11 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q11</div>
+            <div class="question-text">@onefiveの楽曲で一番好きな曲は？</div>
+            <div class="category">音楽・パフォーマンス</div>
+        </div>
+
+        <!-- Question 12 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q12</div>
+            <div class="question-text">歌詞で一番心に残っているフレーズは？</div>
+            <div class="category">音楽・パフォーマンス</div>
+        </div>
+
+        <!-- Question 13 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q13</div>
+            <div class="question-text">ダンスで一番難しい振り付けは？</div>
+            <div class="category">音楽・パフォーマンス</div>
+        </div>
+
+        <!-- Question 14 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q14</div>
+            <div class="question-text">ライブで一番緊張した瞬間は？</div>
+            <div class="category">音楽・パフォーマンス</div>
+        </div>
+
+        <!-- Question 15 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q15</div>
+            <div class="question-text">台湾や上海でのパフォーマンスの感想は？</div>
+            <div class="category">海外活動</div>
+        </div>
+
+        <!-- Question 16 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q16</div>
+            <div class="question-text">海外展開で挑戦したい国は？</div>
+            <div class="category">海外活動</div>
+        </div>
+
+        <!-- Question 17 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q17</div>
+            <div class="question-text">@onefiveとして10年後どうなっていたい？</div>
+            <div class="category">@onefive活動</div>
+        </div>
+
+        <!-- Question 18 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q18</div>
+            <div class="question-text">グループの絆を一言で表すと？</div>
+            <div class="category">メンバー関係</div>
+        </div>
+
+        <!-- Question 19 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q19</div>
+            <div class="question-text">"一期一会"で大切にしていることは？</div>
+            <div class="category">価値観</div>
+        </div>
+
+        <!-- Question 20 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q20</div>
+            <div class="question-text">家族の中での立ち位置は？</div>
+            <div class="category">家族・プライベート</div>
+        </div>
+
+        <!-- Question 21 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q21</div>
+            <div class="question-text">子供の頃の夢はアイドルでしたか？</div>
+            <div class="category">過去・夢</div>
+        </div>
+
+        <!-- Question 22 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q22</div>
+            <div class="question-text">普段のファッションのこだわりは？</div>
+            <div class="category">ファッション・美容</div>
+        </div>
+
+        <!-- Question 23 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q23</div>
+            <div class="question-text">メイクで一番気を使う部分は？</div>
+            <div class="category">ファッション・美容</div>
+        </div>
+
+        <!-- Question 24 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q24</div>
+            <div class="question-text">今挑戦してみたい髪型は？</div>
+            <div class="category">ファッション・美容</div>
+        </div>
+
+        <!-- Question 25 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q25</div>
+            <div class="question-text">休日の過ごし方を教えて</div>
+            <div class="category">プライベート・趣味</div>
+        </div>
+
+        <!-- Question 26 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q26</div>
+            <div class="question-text">一人の時間は何をして過ごす？</div>
+            <div class="category">プライベート・趣味</div>
+        </div>
+
+        <!-- Question 27 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q27</div>
+            <div class="question-text">家族との時間で大切にしていることは？</div>
+            <div class="category">家族・プライベート</div>
+        </div>
+
+        <!-- Question 28 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q28</div>
+            <div class="question-text">ストレス発散方法は？</div>
+            <div class="category">プライベート・趣味</div>
+        </div>
+
+        <!-- Question 29 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q29</div>
+            <div class="question-text">最近ハマっていることは？</div>
+            <div class="category">プライベート・趣味</div>
+        </div>
+
+        <!-- Question 30 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q30</div>
+            <div class="question-text">新しく始めてみたい趣味は？</div>
+            <div class="category">プライベート・趣味</div>
+        </div>
+
+        <!-- Question 31 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q31</div>
+            <div class="question-text">苦手だけど克服したいことは？</div>
+            <div class="category">成長・挑戦</div>
+        </div>
+
+        <!-- Question 32 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q32</div>
+            <div class="question-text">自分の性格を一言で表すと？</div>
+            <div class="category">性格・感情</div>
+        </div>
+
+        <!-- Question 33 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q33</div>
+            <div class="question-text">怒るときはどんな時？</div>
+            <div class="category">性格・感情</div>
+        </div>
+
+        <!-- Question 34 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q34</div>
+            <div class="question-text">泣くときはどんな時？</div>
+            <div class="category">性格・感情</div>
+        </div>
+
+        <!-- Question 35 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q35</div>
+            <div class="question-text">好きな音楽のジャンルは？</div>
+            <div class="category">好きなもの</div>
+        </div>
+
+        <!-- Question 36 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q36</div>
+            <div class="question-text">最近よく聴いているアーティストは？</div>
+            <div class="category">好きなもの</div>
+        </div>
+
+        <!-- Question 37 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q37</div>
+            <div class="question-text">カラオケでよく歌う曲は？</div>
+            <div class="category">好きなもの</div>
+        </div>
+
+        <!-- Question 38 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q38</div>
+            <div class="question-text">好きな映画・ドラマは？</div>
+            <div class="category">好きなもの</div>
+        </div>
+
+        <!-- Question 39 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q39</div>
+            <div class="question-text">好きな食べ物ベスト3を教えて</div>
+            <div class="category">好きなもの</div>
+        </div>
+
+        <!-- Question 40 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q40</div>
+            <div class="question-text">苦手な食べ物は？</div>
+            <div class="category">好きなもの</div>
+        </div>
+
+        <!-- Question 41 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q41</div>
+            <div class="question-text">好きなお菓子・スイーツは？</div>
+            <div class="category">好きなもの</div>
+        </div>
+
+        <!-- Question 42 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q42</div>
+            <div class="question-text">好きな飲み物は？</div>
+            <div class="category">好きなもの</div>
+        </div>
+
+        <!-- Question 43 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q43</div>
+            <div class="question-text">好きな色とその理由は？</div>
+            <div class="category">好きなもの</div>
+        </div>
+
+        <!-- Question 44 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q44</div>
+            <div class="question-text">好きな場所は？</div>
+            <div class="category">好きなもの</div>
+        </div>
+
+        <!-- Question 45 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q45</div>
+            <div class="question-text">旅行で行ってみたい場所は？</div>
+            <div class="category">旅行・場所</div>
+        </div>
+
+        <!-- Question 46 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q46</div>
+            <div class="question-text">インドア派？アウトドア派？</div>
+            <div class="category">性格・感情</div>
+        </div>
+
+        <!-- Question 47 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q47</div>
+            <div class="question-text">朝型？夜型？</div>
+            <div class="category">生活習慣</div>
+        </div>
+
+        <!-- Question 48 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q48</div>
+            <div class="question-text">集めているものはある？</div>
+            <div class="category">プライベート・趣味</div>
+        </div>
+
+        <!-- Question 49 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q49</div>
+            <div class="question-text">大切にしている物は？</div>
+            <div class="category">大切なもの</div>
+        </div>
+
+        <!-- Question 50 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q50</div>
+            <div class="question-text">@onefiveじゃなかったら何をしてると思う？</div>
+            <div class="category">想像・仮定</div>
+        </div>
+
+        <!-- Question 51 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q51</div>
+            <div class="question-text">出てみたいテレビ番組は？</div>
+            <div class="category">メディア・TV</div>
+        </div>
+
+        <!-- Question 52 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q52</div>
+            <div class="question-text">プロデュースしてみたいものは？</div>
+            <div class="category">創作・挑戦</div>
+        </div>
+
+        <!-- Question 53 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q53</div>
+            <div class="question-text">振りを覚えるのが一番早いのは？</div>
+            <div class="category">音楽・パフォーマンス</div>
+        </div>
+
+        <!-- Question 54 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q54</div>
+            <div class="question-text">覚える時の秘訣は？</div>
+            <div class="category">音楽・パフォーマンス</div>
+        </div>
+
+        <!-- Question 55 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q55</div>
+            <div class="question-text">最近いつ泣いた？</div>
+            <div class="category">性格・感情</div>
+        </div>
+
+        <!-- Question 56 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q56</div>
+            <div class="question-text">泣いた理由を教えて</div>
+            <div class="category">性格・感情</div>
+        </div>
+
+        <!-- Question 57 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q57</div>
+            <div class="question-text">モーニングルーティンを教えて</div>
+            <div class="category">生活習慣</div>
+        </div>
+
+        <!-- Question 58 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q58</div>
+            <div class="question-text">最近の悩みごとは？</div>
+            <div class="category">悩み・相談</div>
+        </div>
+
+        <!-- Question 59 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q59</div>
+            <div class="question-text">会ってみたい人は？</div>
+            <div class="category">憧れ・理想</div>
+        </div>
+
+        <!-- Question 60 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q60</div>
+            <div class="question-text">憧れる人（同じ業界）は？</div>
+            <div class="category">憧れ・理想</div>
+        </div>
+
+        <!-- Question 61 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q61</div>
+            <div class="question-text">今まで一番嬉しかったプレゼントは？</div>
+            <div class="category">思い出・エピソード</div>
+        </div>
+
+        <!-- Question 62 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q62</div>
+            <div class="question-text">好きな言葉は？</div>
+            <div class="category">価値観</div>
+        </div>
+
+        <!-- Question 63 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q63</div>
+            <div class="question-text">好きな季節は？</div>
+            <div class="category">好きなもの</div>
+        </div>
+
+        <!-- Question 64 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q64</div>
+            <div class="question-text">好きなキャラクターは？</div>
+            <div class="category">好きなもの</div>
+        </div>
+
+        <!-- Question 65 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q65</div>
+            <div class="question-text">好きなおかずは？</div>
+            <div class="category">好きなもの</div>
+        </div>
+
+        <!-- Question 66 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q66</div>
+            <div class="question-text">メンバーを動物に例えるなら？</div>
+            <div class="category">メンバー関係</div>
+        </div>
+
+        <!-- Question 67 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q67</div>
+            <div class="question-text">ライブ前のルーティーン（絶対やること）は？</div>
+            <div class="category">ライブ・ツアー</div>
+        </div>
+
+        <!-- Question 68 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q68</div>
+            <div class="question-text">ツアーの時に必ず持っていくものは？</div>
+            <div class="category">ライブ・ツアー</div>
+        </div>
+
+        <!-- Question 69 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q69</div>
+            <div class="question-text">ツアーに行ったら、その土地の食べ物は買う？</div>
+            <div class="category">ライブ・ツアー</div>
+        </div>
+
+        <!-- Question 70 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q70</div>
+            <div class="question-text">移動中は何してる？</div>
+            <div class="category">ライブ・ツアー</div>
+        </div>
+
+        <!-- Question 71 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q71</div>
+            <div class="question-text">何か嘘をついてください</div>
+            <div class="category">面白い質問</div>
+        </div>
+
+        <!-- Question 72 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q72</div>
+            <div class="question-text">@onefiveマネージャーに言いたいことは？</div>
+            <div class="category">メンバー関係</div>
+        </div>
+
+        <!-- Question 73 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q73</div>
+            <div class="question-text">これだけはメンバーに負けないことは？</div>
+            <div class="category">メンバー関係</div>
+        </div>
+
+        <!-- Question 74 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q74</div>
+            <div class="question-text">可愛い、綺麗　何を言われたら嬉しい？</div>
+            <div class="category">性格・感情</div>
+        </div>
+
+        <!-- Question 75 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q75</div>
+            <div class="question-text">ポジティブ？ネガティブ？</div>
+            <div class="category">性格・感情</div>
+        </div>
+
+        <!-- Question 76 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q76</div>
+            <div class="question-text">コンビニで寄ってしまうコーナーは？</div>
+            <div class="category">生活習慣</div>
+        </div>
+
+        <!-- Question 77 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q77</div>
+            <div class="question-text">口癖は？</div>
+            <div class="category">性格・感情</div>
+        </div>
+
+        <!-- Question 78 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q78</div>
+            <div class="question-text">よく見るYoutubeチャンネルは？</div>
+            <div class="category">メディア・エンタメ</div>
+        </div>
+
+        <!-- Question 79 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q79</div>
+            <div class="question-text">よく見るTikTok動画は？</div>
+            <div class="category">メディア・エンタメ</div>
+        </div>
+
+        <!-- Question 80 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q80</div>
+            <div class="question-text">メンバーと喧嘩する？</div>
+            <div class="category">メンバー関係</div>
+        </div>
+
+        <!-- Question 81 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q81</div>
+            <div class="question-text">遊園地に行ったら、一番最初に何に乗る？</div>
+            <div class="category">レジャー・娯楽</div>
+        </div>
+
+        <!-- Question 82 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q82</div>
+            <div class="question-text">最近爆笑したことは？</div>
+            <div class="category">思い出・エピソード</div>
+        </div>
+
+        <!-- Question 83 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q83</div>
+            <div class="question-text">@onefiveで活動していて忘れられない出来事は？</div>
+            <div class="category">思い出・エピソード</div>
+        </div>
+
+        <!-- Question 84 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q84</div>
+            <div class="question-text">海外で活動することについてどう思う？</div>
+            <div class="category">海外活動</div>
+        </div>
+
+        <!-- Question 85 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q85</div>
+            <div class="question-text">人生で一番大切にしたいことは？</div>
+            <div class="category">価値観</div>
+        </div>
+
+        <!-- Question 86 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q86</div>
+            <div class="question-text">ライブ中にハプニングが起きたことがありますか？</div>
+            <div class="category">ライブ・ツアー</div>
+        </div>
+
+        <!-- Question 87 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q87</div>
+            <div class="question-text">そのハプニングとは？</div>
+            <div class="category">ライブ・ツアー</div>
+        </div>
+
+        <!-- Question 88 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q88</div>
+            <div class="question-text">もし生まれ変わったら何になりたい？</div>
+            <div class="category">面白い質問</div>
+        </div>
+
+        <!-- Question 89 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q89</div>
+            <div class="question-text">タイムマシンがあったらいつに行く？</div>
+            <div class="category">面白い質問</div>
+        </div>
+
+        <!-- Question 90 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q90</div>
+            <div class="question-text">魔法が使えたら何をしたい？</div>
+            <div class="category">面白い質問</div>
+        </div>
+
+        <!-- Question 91 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q91</div>
+            <div class="question-text">宝くじが当たったら何に使う？</div>
+            <div class="category">面白い質問</div>
+        </div>
+
+        <!-- Question 92 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q92</div>
+            <div class="question-text">前世はなんだったと思う？</div>
+            <div class="category">面白い質問</div>
+        </div>
+
+        <!-- Question 93 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q93</div>
+            <div class="question-text">昆虫は触れますか？</div>
+            <div class="category">性格・感情</div>
+        </div>
+
+        <!-- Question 94 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q94</div>
+            <div class="question-text">無人島に一つだけ持っていくとしたら？</div>
+            <div class="category">面白い質問</div>
+        </div>
+
+        <!-- Question 95 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q95</div>
+            <div class="question-text">人生最後の日に食べたいものは？</div>
+            <div class="category">深い質問</div>
+        </div>
+
+        <!-- Question 96 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q96</div>
+            <div class="question-text">自分の人生を漢字一文字で表すと？</div>
+            <div class="category">深い質問</div>
+        </div>
+
+        <!-- Question 97 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q97</div>
+            <div class="question-text">今一番伝えたいメッセージは？</div>
+            <div class="category">ファンへのメッセージ</div>
+        </div>
+
+        <!-- Question 98 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q98</div>
+            <div class="question-text">@fifthの皆さんに今の気持ちを</div>
+            <div class="category">ファンへのメッセージ</div>
+        </div>
+
+        <!-- Question 99 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q99</div>
+            <div class="question-text">これからの@onefiveに期待してほしいことは？</div>
+            <div class="category">ファンへのメッセージ</div>
+        </div>
+
+        <!-- Question 100 -->
+        <div class="slide question-slide">
+            <div class="question-number">Q100</div>
+            <div class="question-text">今この瞬間の気持ちを一言で！</div>
+            <div class="category">ファンへのメッセージ</div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="prevSlide()">前へ</button>
+        <span class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">101</span>
+        </span>
+        <button class="nav-btn" onclick="nextSlide()">次へ</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        let slides = [];
+        let totalSlides = 0;
+        
+        // 初期化関数
+        function init() {
+            slides = document.querySelectorAll('.slide');
+            totalSlides = slides.length;
+            
+            console.log('スライド数:', totalSlides);
+            
+            // 全てのスライドを非表示にする
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active');
+            });
+            
+            // 最初のスライドを表示
+            if (slides[0]) {
+                slides[0].classList.add('active');
+            }
+            
+            // UIを更新
+            updateUI();
+        }
+        
+        function updateUI() {
+            const currentElement = document.getElementById('current-slide');
+            const totalElement = document.getElementById('total-slides');
+            
+            if (currentElement) currentElement.textContent = currentSlide + 1;
+            if (totalElement) totalElement.textContent = totalSlides;
+            
+            updateProgressBar();
+        }
+        
+        function updateProgressBar() {
+            const progressBar = document.getElementById('progress-bar');
+            if (progressBar && totalSlides > 1) {
+                const progress = (currentSlide / (totalSlides - 1)) * 100;
+                progressBar.style.width = progress + '%';
+            }
+        }
+        
+        function goToSlide(n) {
+            // 範囲チェック
+            if (n < 0 || n >= totalSlides) return;
+            
+            // 現在のスライドを非表示
+            if (slides[currentSlide]) {
+                slides[currentSlide].classList.remove('active');
+            }
+            
+            // 新しいスライドを表示
+            currentSlide = n;
+            if (slides[currentSlide]) {
+                slides[currentSlide].classList.add('active');
+            }
+            
+            updateUI();
+            console.log('スライド変更:', currentSlide + 1, '/', totalSlides);
+        }
+        
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+        
+        function prevSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+        
+        // ページ読み込み完了後に初期化
+        window.addEventListener('load', function() {
+            setTimeout(init, 100);
+        });
+        
+        // DOMContentLoadedでも初期化（保険）
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // ボタンイベント
+        document.addEventListener('click', function(e) {
+            if (e.target.textContent === '次へ' || e.target.onclick === nextSlide) {
+                nextSlide();
+            } else if (e.target.textContent === '前へ' || e.target.onclick === prevSlide) {
+                prevSlide();
+            }
+        });
+        
+        // キーボードナビゲーション
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'ArrowRight':
+                case ' ':
+                    e.preventDefault();
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    prevSlide();
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    goToSlide(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    goToSlide(totalSlides - 1);
+                    break;
+            }
+        });
+        
+        // タッチナビゲーション
+        let touchStartX = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
